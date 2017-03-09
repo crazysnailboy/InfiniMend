@@ -1,5 +1,7 @@
 package net.crazysnailboy.mods.infinimend.asm;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 
 import com.google.common.eventbus.EventBus;
@@ -11,6 +13,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 
 public class IMModContainer extends DummyModContainer
 {
+	private URL updateJSONUrl = null;
 
 	public IMModContainer()
 	{
@@ -18,11 +21,13 @@ public class IMModContainer extends DummyModContainer
 		ModMetadata meta = getMetadata();
 		meta.modId = "infinimend";
 		meta.name = "InfiniMend";
+		meta.version = "1.0";
 		meta.description = "Removes the restriction stopping Infinity from being used with Mending";
-		meta.version = "1.11.2-1.0";
 		meta.url = "https://minecraft.curseforge.com/projects/infinity-mending-unnerf";
 		meta.updateJSON = "https://raw.githubusercontent.com/crazysnailboy/InfiniMend/master/update.json";
 		meta.authorList = Collections.singletonList("crazysnailboy");
+
+		try { updateJSONUrl = new URL(meta.updateJSON); } catch (MalformedURLException e) {}
 	}
 
 	@Override
@@ -30,6 +35,12 @@ public class IMModContainer extends DummyModContainer
 	{
 		bus.register(this);
 		return true;
+	}
+
+	@Override
+	public URL getUpdateUrl()
+	{
+		return updateJSONUrl;
 	}
 
 }
