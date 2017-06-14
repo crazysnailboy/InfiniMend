@@ -1,7 +1,6 @@
 package net.crazysnailboy.mods.infinimend.asm;
 
 import java.util.Arrays;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -12,7 +11,6 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
-
 import net.minecraft.launchwrapper.IClassTransformer;
 
 
@@ -59,7 +57,7 @@ public class IMClassTransformer implements IClassTransformer
 	private static void transformEnchantment(ClassNode enchantmentClass, boolean isObfuscated)
 	{
 		final String METHOD_NAME = isObfuscated ? "a" : "canApplyTogether";
-		final String METHOD_DESCRIPTOR = isObfuscated ? "(Laii;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
+		final String METHOD_DESCRIPTOR = isObfuscated ? "(Lali;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
 
 		for (MethodNode method : enchantmentClass.methods)
 		{

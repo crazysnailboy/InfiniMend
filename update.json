@@ -1,8 +1,13 @@
 {
 	"homepage": "https://minecraft.curseforge.com/projects/infinity-mending-unnerf/files",
 	"promos": {
+		"1.12-latest": "1.0",
+		"1.12-recommended": "1.0",
 		"1.11.2-latest": "1.0",
 		"1.11.2-recommended": "1.0"
+	},
+	"1.12": {
+		"1.0": "Initial release"
 	},
 	"1.11.2": {
 		"1.0": "Initial release"
