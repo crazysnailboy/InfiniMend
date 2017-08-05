@@ -10,27 +10,23 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 
-version = "1.0"
-group = "net.crazysnailboy.mods.infinimend" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "1.0.1"
+group = "net.crazysnailboy.mods.infinimend"
 archivesBaseName = "infinimend-1.12"
 
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = "1.8"
 compileJava {
-	sourceCompatibility = targetCompatibility = '1.8'
+	sourceCompatibility = targetCompatibility = "1.8"
 }
 
 minecraft {
-	version = "1.12-14.21.0.2322"
+	version = "1.12-14.21.1.2387"
 	runDir = "run"
-	mappings = "snapshot_20170614"
+	mappings = "snapshot_20170629"
 	makeObfSourceJar = false
-}
-
-jar {
-	manifest {
-		attributes 'FMLCorePlugin': 'net.crazysnailboy.mods.infinimend.asm.IMLoadingPlugin'
-		attributes 'FMLCorePluginContainsMod': 'true'
-	}
+	
+	replace "\${version}", project.version
+	replaceIn "IMModContainer.java"
 }
 
 dependencies {
@@ -47,3 +43,21 @@ processResources {
 		exclude 'mcmod.info'
 	}
 }
+
+jar {
+	manifest {
+		attributes 'FMLCorePlugin': 'net.crazysnailboy.mods.infinimend.asm.IMLoadingPlugin'
+		attributes 'FMLCorePluginContainsMod': 'true'
+	}
+}
+
+task signJar(type: SignJar, dependsOn: reobfJar) {
+	keyStore = "keystore"
+	alias = "keystore"
+	storePass = "password"
+	keyPass = "password"
+	inputFile = jar.archivePath
+	outputFile = jar.archivePath
+}
+
+build.dependsOn signJar

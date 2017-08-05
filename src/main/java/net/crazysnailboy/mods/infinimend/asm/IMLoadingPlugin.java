@@ -3,21 +3,21 @@ package net.crazysnailboy.mods.infinimend.asm;
 import java.util.Map;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
-@IFMLLoadingPlugin.MCVersion("1.12")
-@IFMLLoadingPlugin.TransformerExclusions("net.crazysnailboy.mods.infinimend.asm")
+
+@IFMLLoadingPlugin.TransformerExclusions("net.crazysnailboy.mods.infinimend")
 public class IMLoadingPlugin implements IFMLLoadingPlugin
 {
 
 	@Override
 	public String[] getASMTransformerClass()
 	{
-		return new String[] { "net.crazysnailboy.mods.infinimend.asm.IMClassTransformer" };
+		return new String[] { IMClassTransformer.class.getName() };
 	}
 
 	@Override
 	public String getModContainerClass()
 	{
-		return "net.crazysnailboy.mods.infinimend.asm.IMModContainer";
+		return IMModContainer.class.getName();
 	}
 
 	@Override

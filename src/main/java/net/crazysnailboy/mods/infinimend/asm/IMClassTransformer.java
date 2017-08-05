@@ -1,6 +1,6 @@
 package net.crazysnailboy.mods.infinimend.asm;
 
-import java.util.Arrays;
+import java.util.function.Supplier;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -17,52 +17,59 @@ import net.minecraft.launchwrapper.IClassTransformer;
 public class IMClassTransformer implements IClassTransformer
 {
 
-	private static final String[] classesBeingTransformed = new String[] { "net.minecraft.enchantment.EnchantmentArrowInfinite" };
-
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] classBeingTransformed)
 	{
 		boolean isObfuscated = !name.equals(transformedName);
-		int index = Arrays.asList(classesBeingTransformed).indexOf(transformedName);
-		return index != -1 ? transform(index, classBeingTransformed, isObfuscated) : classBeingTransformed;
-	}
 
-	private static byte[] transform(int index, byte[] classBeingTransformed, boolean isObfuscated)
-	{
-		try
+		if (transformedName.equals("net.minecraft.enchantment.EnchantmentArrowInfinite"))
 		{
-			ClassNode classNode = new ClassNode();
-			ClassReader classReader = new ClassReader(classBeingTransformed);
-			classReader.accept(classNode, 0);
-
-			switch(index)
+			try
 			{
-				case 0:
-					transformEnchantment(classNode, isObfuscated);
-					break;
-			}
+				ClassNode classNode = new ClassNode();
+				ClassReader classReader = new ClassReader(classBeingTransformed);
+				classReader.accept(classNode, 0);
 
-			ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-			classNode.accept(classWriter);
-			return classWriter.toByteArray();
+				transformEnchantment(classNode, isObfuscated);
+
+				ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+				classNode.accept(classWriter);
+				return classWriter.toByteArray();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			return classBeingTransformed;
 		}
-		catch (Exception e)
+		else
 		{
-			e.printStackTrace();
+			return classBeingTransformed;
 		}
-		return classBeingTransformed;
 	}
 
 
 	private static void transformEnchantment(ClassNode enchantmentClass, boolean isObfuscated)
 	{
-		final String METHOD_NAME = isObfuscated ? "a" : "canApplyTogether";
-		final String METHOD_DESCRIPTOR = isObfuscated ? "(Lali;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
+		final String METHOD_NODE_NAME = (isObfuscated ? "a" : "canApplyTogether");
+		final String METHOD_INSN_NAME = (isObfuscated ? "func_77326_a" : "canApplyTogether");
+
+		final String METHOD_DESCRIPTOR = ((Supplier<String>)(() -> {
+
+			switch (net.minecraftforge.fml.common.Loader.instance().getMCVersionString().substring(10))
+			{
+				case "1.12": return isObfuscated ? "(Lali;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
+				case "1.12.1": return isObfuscated ? "(Lalk;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
+				default: return null;
+			}
+
+		})).get();
 
 		for (MethodNode method : enchantmentClass.methods)
 		{
-			if (method.name.equals(METHOD_NAME) && method.desc.equals(METHOD_DESCRIPTOR))
+			if (method.name.equals(METHOD_NODE_NAME) && method.desc.equals(METHOD_DESCRIPTOR))
 			{
+
 				/*
 				Replacing:
 					return ench instanceof EnchantmentMending ? false : super.canApplyTogether(ench);
@@ -128,7 +135,6 @@ public class IMClassTransformer implements IClassTransformer
 
 				if (targetNode != null)
 				{
-
 					while (targetNode.getOpcode() != Opcodes.IRETURN)
 					{
 						targetNode = targetNode.getNext();
@@ -138,15 +144,13 @@ public class IMClassTransformer implements IClassTransformer
 					InsnList toInsert = new InsnList();
 					toInsert.add(new VarInsnNode(Opcodes.ALOAD, 0));
 					toInsert.add(new VarInsnNode(Opcodes.ALOAD, 1));
-					toInsert.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, Type.getInternalName(net.minecraft.enchantment.Enchantment.class), (isObfuscated ? "func_77326_a" : "canApplyTogether"), METHOD_DESCRIPTOR, false));
+					toInsert.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, Type.getInternalName(net.minecraft.enchantment.Enchantment.class), METHOD_INSN_NAME, METHOD_DESCRIPTOR, false));
 					method.instructions.insertBefore(targetNode, toInsert);
 
 				}
 
 			}
-
 		}
 	}
-
 
 }
