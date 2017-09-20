@@ -46,7 +46,7 @@ public class IMModContainer extends DummyModContainer
     {
         try
 		{
-			return VersionRange.createFromVersionSpec("[1.12,1.12.1]");
+			return VersionRange.createFromVersionSpec("[1.12,1.12.2]");
 		}
 		catch (InvalidVersionSpecificationException ex)
 		{

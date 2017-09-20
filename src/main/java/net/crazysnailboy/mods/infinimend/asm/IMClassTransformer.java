@@ -60,6 +60,7 @@ public class IMClassTransformer implements IClassTransformer
 			{
 				case "1.12": return isObfuscated ? "(Lali;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
 				case "1.12.1": return isObfuscated ? "(Lalk;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
+				case "1.12.2": return isObfuscated ? "(Lalk;)Z" : "(Lnet/minecraft/enchantment/Enchantment;)Z";
 				default: return null;
 			}
 
